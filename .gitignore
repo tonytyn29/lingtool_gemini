@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# 虚拟环境
+venv/
+.venv/
+
+# IDE 配置
+.idea/
+.vscode/
+.cursor/
+
+# OS
+.DS_Store
+thumbs.db
+
+# 其他你不想上传的
+*.log
+node_modules

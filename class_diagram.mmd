@@ -1,0 +1,110 @@
+classDiagram
+    class Book {
+        +string id
+        +string title
+        +string author
+        +string languageCode
+        +string fileType
+        +number totalPages
+        +number currentPage
+        +number readingProgress
+        +string[] contentPages
+        +Chapter[] chapters
+        +FileIndex[] fileIndex
+        +AnchorIndex[] anchorIndex
+    }
+
+    class Chapter {
+        +string id
+        +string title
+        +number page
+        +string href
+        +string absPath
+        +string anchorId
+    }
+
+    class Sentence {
+        +string id
+        +string originalText
+        +string translatedText
+        +string languageCode
+        +number difficulty
+        +Date createdAt
+        +number reviewCount
+    }
+
+    class User {
+        +string id
+        +string username
+        +string email
+        +string nativeLanguage
+        +string[] learningLanguages
+    }
+
+    class BookStore {
+        +Book[] books
+        +addBook(bookData) Book
+        +updateBook(id, updates) void
+        +deleteBook(id) void
+        +getBook(id) Book
+    }
+
+    class SentenceStore {
+        +Sentence[] sentences
+        +addSentence(sentence) Sentence
+        +updateSentence(id, updates) void
+        +getSentences() Sentence[]
+    }
+
+    class AuthStore {
+        +User user
+        +boolean isAuthenticated
+        +login(credentials) void
+        +logout() void
+    }
+
+    class AIService {
+        +translateText(text, targetLang) string
+        +generateChapterSummary(chapterText, title) string
+        +getLastDebug() object
+    }
+
+    class BookParser {
+        +parseTxt(file) ParsedBook
+        +parsePdf(file) ParsedBook
+        +parseEpub(file) ParsedBook
+        +parseBookByType(file, type) ParsedBook
+    }
+
+    class ParsedBook {
+        +string title
+        +string author
+        +string content
+        +Chapter[] chapters
+        +FileIndex[] fileIndex
+        +AnchorIndex[] anchorIndex
+    }
+
+    class FileIndex {
+        +string path
+        +number start
+        +number end
+    }
+
+    class AnchorIndex {
+        +string path
+        +string id
+        +number start
+    }
+
+    Book "1" --> "*" Chapter : contains
+    Book "1" --> "*" FileIndex : has
+    Book "1" --> "*" AnchorIndex : has
+    BookStore "1" --> "*" Book : manages
+    SentenceStore "1" --> "*" Sentence : manages
+    AIService ..> Sentence : processes
+    BookParser ..> Book : creates
+    BookParser ..> ParsedBook : returns
+    ParsedBook "1" --> "*" Chapter : contains
+    ParsedBook "1" --> "*" FileIndex : has
+    ParsedBook "1" --> "*" AnchorIndex : has

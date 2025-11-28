@@ -1,0 +1,70 @@
+graph TB
+    %% 外部实体
+    User[👤 用户]
+    FileSystem[📁 文件系统]
+    AIProvider[🤖 AI服务提供商]
+    Browser[🌐 浏览器存储]
+    
+    %% 系统边界
+    subgraph LingTool["📚 LingTool 阅读工具"]
+        direction TB
+        
+        %% 核心功能模块
+        subgraph Core["核心功能"]
+            BookParser[📖 书籍解析器]
+            BookReader[📄 阅读器]
+            BookSummarizer[📝 总结器]
+            BookShelf[📚 书架管理]
+        end
+        
+        %% 数据存储
+        subgraph Storage["数据存储"]
+            BookStore[📦 书籍存储]
+            AuthStore[🔐 认证存储]
+            ContentStorage[💾 内容存储]
+        end
+        
+        %% 服务层
+        subgraph Services["服务层"]
+            AIService[🤖 AI服务]
+            TranslationService[🌍 翻译服务]
+        end
+    end
+    
+    %% 数据流连接
+    User -->|上传书籍文件| BookParser
+    User -->|阅读操作| BookReader
+    User -->|生成总结| BookSummarizer
+    User -->|管理书籍| BookShelf
+    
+    FileSystem -->|读取文件| BookParser
+    BookParser -->|解析结果| BookStore
+    BookStore -->|书籍数据| BookReader
+    BookStore -->|书籍数据| BookSummarizer
+    BookStore -->|书籍列表| BookShelf
+    
+    BookReader -->|阅读进度| BookStore
+    BookSummarizer -->|总结结果| BookStore
+    
+    AIService -->|API调用| AIProvider
+    BookSummarizer -->|请求总结| AIService
+    BookReader -->|请求翻译| TranslationService
+    TranslationService -->|API调用| AIProvider
+    
+    BookStore -->|持久化| Browser
+    AuthStore -->|持久化| Browser
+    ContentStorage -->|持久化| Browser
+    
+    Browser -->|恢复数据| BookStore
+    Browser -->|恢复数据| AuthStore
+    Browser -->|恢复数据| ContentStorage
+    
+    %% 数据流标签
+    User -.->|"书籍文件<br/>(EPUB/PDF/TXT)"| BookParser
+    BookParser -.->|"解析数据<br/>(content, chapters, fileIndex, anchorIndex)"| BookStore
+    BookStore -.->|"书籍元数据<br/>(title, author, chapters)"| BookReader
+    BookStore -.->|"章节内容<br/>(text, pageOffsets)"| BookSummarizer
+    BookSummarizer -.->|"总结请求<br/>(chapterText, prompt)"| AIService
+    AIService -.->|"AI响应<br/>(summary, translation)"| BookSummarizer
+    BookReader -.->|"阅读状态<br/>(currentPage, progress)"| BookStore
+    BookStore -.->|"存储数据<br/>(JSON, localStorage)"| Browser
